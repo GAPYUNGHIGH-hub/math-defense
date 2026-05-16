@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>수학 사수 프로젝트</title>
+<link href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" rel="stylesheet">
+<style>
+:root{
+--bg:#0C0C0F;--card:#16161A;--card2:#1E1E24;
+--border:rgba(255,255,255,0.06);
+--t1:#F0F0F0;--t2:#9A9AA0;--t3:#5A5A62;
+--red:#FF4D4D;--red-bg:rgba(255,77,77,0.08);--red-bg2:rgba(255,77,77,0.15);
+--green:#34D399;--green-bg:rgba(52,211,153,0.08);
+--amber:#FBBF24;--amber-bg:rgba(251,191,36,0.08);
+--blue:#60A5FA;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{font-family:'Pretendard Variable',-apple-system,sans-serif;background:var(--bg);color:var(--t1);max-width:480px;margin:0 auto;padding:0 20px 80px;line-height:1.6;-webkit-font-smoothing:antialiased;user-select:none}
+.hero{padding:44px 0 24px;text-align:center}
+.hero-badge{display:inline-block;font-size:11px;font-weight:600;letter-spacing:0.08em;color:var(--red);background:var(--red-bg);padding:6px 14px;border-radius:20px;margin-bottom:16px}
+.hero h1{font-size:26px;font-weight:700;line-height:1.35;margin-bottom:10px}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero p{font-size:14px;color:var(--t2);line-height:1.7}
+.sec{margin-top:32px}
+.sec-head{font-size:13px;font-weight:600;color:var(--t3);letter-spacing:0.06em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sec-head::before{content:'';width:16px;height:1.5px;background:var(--t3)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:12px}
+
+/* 인터랙티브 블록 */
+.blocks-row{display:flex;gap:8px;justify-content:center;padding:8px 0 12px}
+.blk-wrap{display:flex;flex-direction:column;align-items:center;flex:1;max-width:80px}
+.blk{border-radius:12px;padding:6px 4px;text-align:center;position:relative;transition:all 0.3s;width:100%}
+.blk.math{box-shadow:0 0 0 2px var(--red),0 0 16px rgba(255,77,77,0.15)}
+.blk-n{font-size:11px;font-weight:500;opacity:0.8}
+.blk-g{font-size:26px;font-weight:800;margin:2px 0}
+.blk-c{font-size:9px;opacity:0.5}
+.blk-btns{display:flex;gap:4px;margin-top:6px;justify-content:center}
+.blk-btn{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--card2);color:var(--t2);font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;-webkit-tap-highlight-color:transparent}
+.blk-btn:active{transform:scale(0.9);background:var(--border)}
+
+.avg-dual{display:flex;justify-content:center;align-items:center;gap:16px;padding:12px 0 4px}
+.avg-item{text-align:center}
+.avg-l{font-size:11px;color:var(--t3);margin-bottom:2px}
+.avg-n{font-size:30px;font-weight:700;transition:color 0.3s}
+
+.delta-bar{display:flex;justify-content:center;gap:8px;margin-top:8px;flex-wrap:wrap}
+.delta-tag{font-size:12px;font-weight:600;padding:4px 12px;border-radius:16px;transition:all 0.3s}
+
+.note{font-size:11px;color:var(--t3);text-align:center;margin-top:8px}
+
+.reset-btn{display:block;margin:12px auto 0;font-size:12px;color:var(--t3);background:var(--card2);border:1px solid var(--border);padding:6px 16px;border-radius:20px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.reset-btn:active{background:var(--border)}
+
+/* 체감 비교 */
+.gap-visual{margin:16px 0}
+.gap-row{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.gap-label{font-size:12px;color:var(--t2);min-width:56px;text-align:right}
+.gap-track{flex:1;height:38px;background:var(--card2);border-radius:8px;position:relative;display:flex;align-items:center}
+.gap-fill{height:100%;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;transition:width 0.6s;padding:0 8px;white-space:nowrap}
+.gap-vs{text-align:center;font-size:11px;color:var(--t3);padding:4px 0}
+
+.msg{border-radius:14px;padding:16px 18px;margin:14px 0;line-height:1.8;font-size:14px}
+.msg-r{background:var(--red-bg2);color:#FCA5A5;border:1px solid rgba(255,77,77,0.15)}
+.msg-r strong{color:var(--red)}
+.msg-a{background:var(--amber-bg);color:#FDE68A;border:1px solid rgba(251,191,36,0.1)}
+.msg-g{background:var(--green-bg);color:#6EE7B7;border:1px solid rgba(52,211,153,0.1)}
+
+.conv-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px}
+.conv-table th{font-size:11px;color:var(--t3);font-weight:500;padding:8px 4px;text-align:center;border-bottom:1px solid var(--border)}
+.conv-table td{padding:7px 4px;text-align:center;border-bottom:1px solid var(--border)}
+.conv-table tr.hl{background:var(--red-bg)}
+.conv-table tr.hl-g{background:var(--green-bg)}
+.conv-table tr.hl-a{background:var(--amber-bg)}
+
+.eye-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin:12px 0}
+.eye-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.eye-row:last-child{border:none}
+.eye-dot{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.eye-dot.ok{background:var(--green)}.eye-dot.warn{background:var(--amber)}.eye-dot.bad{background:var(--red)}
+.eye-text{font-size:14px;line-height:1.6}
+.eye-text strong{color:var(--red)}.eye-text em{font-style:normal;color:var(--green)}
+
+.final-msg{margin-top:40px;text-align:center;padding:32px 16px;border-top:1px solid var(--border)}
+.final-msg p{font-size:22px;font-weight:700;line-height:1.5}
+.final-msg p em{font-style:normal;color:var(--red)}
+.final-msg .sub{font-size:14px;color:var(--t2);margin-top:12px;line-height:1.7}
+
+.fade-in{opacity:0;transform:translateY(16px);transition:all 0.6s cubic-bezier(0.22,1,0.36,1)}
+.fade-in.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="hero fade-in">
+  <div class="hero-badge">간호학과 핵심교과 시뮬레이션</div>
+  <h1>각 과목 등급을<br/><em>직접 바꿔봐</em></h1>
+  <p>▲▼ 버튼으로 각 과목 등급을 조절하면<br/>전체 평균이 어떻게 변하는지 바로 확인돼.</p>
+</div>
+
+<!-- ① 인터랙티브 블록 -->
+<div class="sec fade-in">
+  <div class="sec-head">간호학과 핵심 교과</div>
+  <div class="card">
+    <div class="blocks-row" id="blocks"></div>
+    <div class="avg-dual">
+      <div class="avg-item">
+        <div class="avg-l">5등급제 평균</div>
+        <div class="avg-n" id="avg5">—</div>
+      </div>
+      <div style="color:var(--t3);font-size:20px;padding-top:14px">→</div>
+      <div class="avg-item">
+        <div class="avg-l">9등급 환산</div>
+        <div class="avg-n" id="avg9">—</div>
+      </div>
+    </div>
+    <div class="delta-bar" id="deltaBar"></div>
+    <button class="reset-btn" id="resetBtn">원래 성적으로 되돌리기</button>
+    <div class="note">간호학과 입시 비중: 국·영·수·과(4학점) + 사회(3학점)</div>
+  </div>
+</div>
+
+<!-- ② 3→4 체감 비교 -->
+<div class="sec fade-in">
+  <div class="sec-head">수학 3등급 → 4등급, 진짜 차이</div>
+  <div class="card">
+    <p style="font-size:14px;color:var(--t2);margin-bottom:16px;line-height:1.7">
+      수학이 한 등급 떨어졌을 때<br/>
+      <strong style="color:var(--t1)">같은 변화를 두 가지 잣대로 봐봐.</strong>
+    </p>
+    <div class="gap-visual">
+      <div class="gap-row">
+        <div class="gap-label">5등급제</div>
+        <div class="gap-track">
+          <div class="gap-fill" id="g5bar" style="background:rgba(251,191,36,0.2);color:var(--amber)">—</div>
+        </div>
+      </div>
+      <div class="gap-vs">↓ 9등급으로 환산하면 ↓</div>
+      <div class="gap-row">
+        <div class="gap-label">9등급제</div>
+        <div class="gap-track">
+          <div class="gap-fill" id="g9bar" style="background:rgba(255,77,77,0.2);color:var(--red)">—</div>
+        </div>
+      </div>
+    </div>
+    <div class="msg msg-r">
+      5등급 <strong>0.21</strong> 차이가 9등급에서는 <strong>2배로 확대</strong>돼.<br/><br/>
+      이게 단순한 숫자 차이가 아니야.<br/>
+      <strong>학종으로 종합대학에 갈 수 있느냐,<br/>전문대를 가야 하느냐의 갈림길</strong>이 달라지는 거야.
+    </div>
+  </div>
+</div>
+
+<!-- ③ 환산표 -->
+<div class="sec fade-in">
+  <div class="sec-head">5등급 ↔ 9등급 환산표</div>
+  <div class="card">
+    <p style="font-size:12px;color:var(--t3);margin-bottom:10px;line-height:1.5">
+      부산시교육청 기준 · ● 현재 설정의 소영이 위치
+    </p>
+    <table class="conv-table">
+      <tr><th>5등급</th><th></th><th>9등급</th><th>누적%</th><th></th></tr>
+      <tbody id="convBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ④ 입학사정관 -->
+<div class="sec fade-in">
+  <div class="sec-head">입학사정관의 눈</div>
+  <div class="eye-card">
+    <div class="eye-row"><div class="eye-dot ok"></div><div class="eye-text"><em>영어·과학 2등급</em> — 뚜렷한 상승세, 간호학과 학습역량 입증</div></div>
+    <div class="eye-row"><div class="eye-dot ok"></div><div class="eye-text"><em>탐구 활동 다양성</em> — 신경과 간호사 진로 적합성 확인</div></div>
+    <div class="eye-row"><div class="eye-dot warn"></div><div class="eye-text">국어 3등급 — 원점수·성취도와 세특·탐구로 충분히 보완 가능한 범위</div></div>
+    <div class="eye-row"><div class="eye-dot bad"></div><div class="eye-text"><strong>수학 4등급 + 원점수 평균 미달</strong> — 기초학력에 물음표. 다른 성과의 설득력이 약해져.</div></div>
+  </div>
+  <div class="msg msg-r">
+    다른 과목의 상승세는 "성장하는 학생"으로 분명히 좋은 인상을 줘. <strong>이건 진짜 너의 무기야.</strong><br/><br/>
+    하지만 수학 원점수가 평균에도 못 미치면, <strong>많은 대학에서 기초학력을 의심</strong>하게 돼.<br/><br/>
+    다른 과목의 노력은 절대 헛되지 않아. 그 노력이 빛나려면, <strong>수학이라는 마지노선 하나만 지켜주면 돼.</strong>
+  </div>
+</div>
+
+<div class="final-msg fade-in">
+  <p>수학은 올리는 과목이 아니야.<br/><em>반드시 사수해야 할 과목</em>이야.</p>
+  <div class="sub">
+    네가 다른 과목에서 보여준 상승세, 그건 진짜야.<br/>
+    그 노력은 어떤 상황에서든 너의 힘이 돼.<br/>
+    거기에 수학 마지노선 하나만 지켜주면,<br/>
+    네 모든 노력이 비로소 온전히 빛나.
+  </div>
+</div>
+
+<script>
+const F=[
+[1.00,1.20],[1.01,1.25],[1.02,1.35],[1.14,1.74],[1.15,1.86],
+[1.17,1.91],[1.28,1.97],[1.30,2.09],[1.31,2.11],[1.34,2.14],
+[1.37,2.19],[1.41,2.20],[1.42,2.25],[1.43,2.27],[1.46,2.29],
+[1.54,2.32],[1.58,2.41],[1.60,2.54],[1.65,2.60],[1.73,2.66],
+[1.76,2.71],[1.79,2.88],[1.81,2.91],[1.85,3.10],[1.86,3.23],
+[1.88,3.27],[1.91,3.30],[1.93,3.34],[1.96,3.37],[1.97,3.41],
+[1.98,3.44],[1.99,3.46],[2.03,3.47],[2.04,3.50],[2.05,3.56],
+[2.08,3.60],[2.10,3.65],[2.15,3.68],[2.18,3.70],[2.20,3.80],
+[2.25,3.90],[2.29,4.00],[2.35,4.09],[2.41,4.18],[2.45,4.22],
+[2.47,4.24],[2.48,4.29],[2.50,4.30],[2.52,4.33],[2.54,4.40],
+[2.58,4.47],[2.60,4.52],[2.66,4.57],[2.76,4.65],[2.77,4.70],
+[2.80,4.75],[2.90,4.80],[2.98,4.85],[3.00,4.93],[3.05,5.00],
+[3.40,5.40],[3.60,5.83],[4.00,6.69],[4.50,7.40],[5.00,9.00]
+];
+function toNine(v){
+  if(v<=F[0][0])return F[0][1];if(v>=F[F.length-1][0])return F[F.length-1][1];
+  for(let i=0;i<F.length-1;i++){if(v>=F[i][0]&&v<=F[i+1][0]){const t=(v-F[i][0])/(F[i+1][0]-F[i][0]);return F[i][1]+t*(F[i+1][1]-F[i][1]);}}return 5;
+}
+
+// 과목 데이터
+const origGrades = [3, 3, 2, 2, 2];
+const subs = [
+  {n:'국어', cr:4, gr:3, h:'#A78BFA'},
+  {n:'수학', cr:4, gr:3, h:'#FF4D4D', m:true},
+  {n:'영어', cr:4, gr:2, h:'#60A5FA'},
+  {n:'과학', cr:4, gr:2, h:'#2DD4BF'},
+  {n:'사회', cr:3, gr:2, h:'#34D399'}
+];
+const TC = subs.reduce((a,c)=>a+c.cr, 0);
+
+function avg(L){let s=0,t=0;L.forEach(x=>{s+=x.gr*x.cr;t+=x.cr});return s/t;}
+
+const baseAvg5 = avg(subs.map((s,i)=>({...s, gr:origGrades[i]})));
+const baseAvg9 = toNine(baseAvg5);
+
+function buildBlocks(){
+  const el = document.getElementById('blocks');
+  el.innerHTML = '';
+  subs.forEach((s, i) => {
+    const bg = s.m ? (s.gr>=4?'rgba(255,77,77,0.25)':'rgba(255,77,77,0.12)') : s.h+'18';
+    const tc = s.m ? '#FF4D4D' : s.h;
+    const w = document.createElement('div');
+    w.className = 'blk-wrap';
+    w.innerHTML = `
+      <div class="blk ${s.m?'math':''}" style="background:${bg};${s.m&&s.gr>=4?'box-shadow:0 0 0 2px var(--red),0 0 24px rgba(255,77,77,0.3)':''}">
+        <div class="blk-n" style="color:${tc}">${s.n}</div>
+        <div class="blk-g" style="color:${tc}">${s.gr}</div>
+        <div class="blk-c" style="color:${tc}">${s.cr}학점</div>
+      </div>
+      <div class="blk-btns">
+        <div class="blk-btn" data-i="${i}" data-d="-1">▼</div>
+        <div class="blk-btn" data-i="${i}" data-d="1">▲</div>
+      </div>`;
+    el.appendChild(w);
+  });
+  el.querySelectorAll('.blk-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const i = +btn.dataset.i, d = +btn.dataset.d;
+      const ng = subs[i].gr - d; // ▲ = 등급 내려감(숫자 줄어듦), ▼ = 등급 올라감(숫자 커짐)
+      if(ng >= 1 && ng <= 5) { subs[i].gr = ng; refresh(); }
+    });
+  });
+}
+
+function refresh(){
+  buildBlocks();
+  const a5 = avg(subs), a9 = toNine(a5);
+  const d5 = a5 - baseAvg5, d9 = a9 - baseAvg9;
+
+  const e5 = document.getElementById('avg5');
+  e5.textContent = a5.toFixed(2);
+  e5.style.color = a5<=2.3?'var(--green)':a5<=2.5?'var(--amber)':'var(--red)';
+
+  const e9 = document.getElementById('avg9');
+  e9.textContent = a9.toFixed(1);
+  e9.style.color = a9<4.3?'var(--blue)':'var(--red)';
+
+  // 델타 태그
+  const db = document.getElementById('deltaBar');
+  db.innerHTML = '';
+  if(Math.abs(d5) < 0.005){
+    db.innerHTML = '<div class="delta-tag" style="background:var(--amber-bg);color:var(--amber)">현재 성적 기준</div>';
+  } else {
+    const better = d5 < 0;
+    const c = better ? 'var(--green)' : 'var(--red)';
+    const bg = better ? 'var(--green-bg)' : 'var(--red-bg2)';
+    db.innerHTML = `<div class="delta-tag" style="background:${bg};color:${c}">5등급 ${better?'':'+'} ${d5.toFixed(2)}</div>
+      <div class="delta-tag" style="background:${bg};color:${c}">9등급 ${better?'':'+'} ${d9.toFixed(1)}</div>`;
+
+    // 과목별 변화 확인
+    const changes = [];
+    subs.forEach((s,i) => {
+      const diff = origGrades[i] - s.gr; // 양수 = 개선
+      if(diff !== 0) changes.push(`${s.n} ${origGrades[i]}→${s.gr}`);
+    });
+    if(changes.length){
+      const tag = document.createElement('div');
+      tag.style.cssText = 'font-size:11px;color:var(--t3);width:100%;text-align:center;margin-top:4px';
+      tag.textContent = changes.join(', ');
+      db.appendChild(tag);
+    }
+  }
+  buildTable();
+}
+
+document.getElementById('resetBtn').addEventListener('click', () => {
+  subs.forEach((s,i) => s.gr = origGrades[i]);
+  refresh();
+});
+
+// 체감 비교 (수학 3→4 고정 비교)
+const fix3 = avg(subs.map((s,i)=>({...s, gr:origGrades[i]})));
+const fix4 = avg(subs.map((s,i)=>({...s, gr: s.m ? 4 : origGrades[i]})));
+const n3 = toNine(fix3), n4 = toNine(fix4);
+const gd5 = fix4 - fix3, gd9 = n4 - n3;
+const ratio = gd9 / gd5;
+
+const barScale = gd5 / gd9;
+document.getElementById('g5bar').style.width = (barScale*100).toFixed(0)+'%';
+document.getElementById('g5bar').textContent = '+'+gd5.toFixed(2)+' ('+fix3.toFixed(2)+'→'+fix4.toFixed(2)+')';
+document.getElementById('g9bar').style.width = '100%';
+document.getElementById('g9bar').textContent = '+'+gd9.toFixed(1)+' ('+n3.toFixed(1)+'→'+n4.toFixed(1)+')';
+
+// 환산표
+const tblData=[
+  [1.50,2.48,7.30],[1.66,2.76,9.97],[1.83,3.07,13.56],
+  [2.00,3.44,18.59],[2.16,3.61,21.06],[2.33,3.94,26.45],
+  [2.50,4.22,31.87],[2.66,4.47,36.92],[2.83,4.76,43.70],
+  [3.00,5.08,51.18],[3.33,5.55,62.16],[3.66,6.05,73.48]
+];
+function buildTable(){
+  const bd=document.getElementById('convBody');bd.innerHTML='';
+  const curAvg = avg(subs);
+  tblData.forEach(([f5,f9,pct])=>{
+    const tr=document.createElement('tr');
+    const near = Math.abs(curAvg - f5) < 0.12;
+    tr.className = near ? (curAvg > 2.55 ? 'hl' : curAvg < 2.35 ? 'hl-g' : 'hl-a') : '';
+    const mk = near ? '<span style="color:var(--amber);font-weight:700">● 여기</span>' : '';
+    tr.innerHTML=`<td style="color:var(--amber);font-weight:600">${f5.toFixed(2)}</td><td style="color:var(--t3)">→</td><td style="color:var(--blue);font-weight:600">${f9.toFixed(2)}</td><td style="font-size:11px;color:var(--t2)">${pct.toFixed(1)}%</td><td style="font-size:11px">${mk}</td>`;
+    bd.appendChild(tr);
+  });
+}
+
+// init
+buildBlocks();
+refresh();
+
+const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('show')});},{threshold:0.12});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
