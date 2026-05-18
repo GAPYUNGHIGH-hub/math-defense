@@ -87,6 +87,16 @@ body{font-family:'Pretendard Variable',-apple-system,sans-serif;background:var(-
 .final-msg p em{font-style:normal;color:var(--red)}
 .final-msg .sub{font-size:14px;color:var(--t2);margin-top:12px;line-height:1.7}
 
+.bd-row{margin-bottom:16px}
+.bd-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.bd-name{font-size:14px;font-weight:600}
+.bd-info{font-size:11px;color:var(--t3)}
+.bd-track{height:36px;background:var(--card2);border-radius:8px;position:relative;overflow:hidden}
+.bd-me{position:absolute;top:0;bottom:0;width:3px;background:var(--t1);z-index:3;transition:left 0.6s}
+.bd-me-dot{position:absolute;top:50%;width:10px;height:10px;border-radius:50%;background:var(--t1);transform:translate(-50%,-50%);z-index:4}
+.bd-zone{position:absolute;top:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600}
+.bd-tag{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:12px;margin-top:6px}
+.bd-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
 .fade-in{opacity:0;transform:translateY(16px);transition:all 0.6s cubic-bezier(0.22,1,0.36,1)}
 .fade-in.show{opacity:1;transform:translateY(0)}
 </style>
@@ -167,7 +177,18 @@ body{font-family:'Pretendard Variable',-apple-system,sans-serif;background:var(-
   </div>
 </div>
 
-<!-- ④ 입학사정관 -->
+<!-- ④ 등급 경계 분석 -->
+<div class="sec fade-in">
+  <div class="sec-head">2-1 중간고사 등급 경계 분석</div>
+  <div class="card">
+    <p style="font-size:14px;color:var(--t2);margin-bottom:16px;line-height:1.7">
+      지금 각 과목에서 <strong style="color:var(--t1)">앞등급까지 몇 명을 추월해야 하고, 뒷등급까지 몇 명 여유가 있는지</strong> 봐봐.
+    </p>
+    <div id="boundaryBars"></div>
+  </div>
+</div>
+
+<!-- ⑤ 입학사정관 -->
 <div class="sec fade-in">
   <div class="sec-head">입학사정관의 눈</div>
   <div class="eye-card">
@@ -179,7 +200,7 @@ body{font-family:'Pretendard Variable',-apple-system,sans-serif;background:var(-
   <div class="msg msg-r">
     다른 과목의 상승세는 "성장하는 학생"으로 분명히 좋은 인상을 줘. <strong>이건 진짜 너의 무기야.</strong><br/><br/>
     하지만 수학 원점수가 평균에도 못 미치면, <strong>많은 대학에서 기초학력을 의심</strong>하게 돼.<br/><br/>
-    3등급이 포함된 과목들의 성적을 만회하기 위해서, 그나마 가능성 있는 과목에서는 <strong>성취도 A를 받기 위한 노력도 반드시 병행</strong>되어야 해. 2028학년도에서는 <strong>성취도 A를 1등급으로 환산해줄 여지가 높아지고 있기 때문</strong>이란다. 다른 과목의 노력은 절대 헛되지 않아 — 그 노력이 빛나려면, <strong>수학이라는 마지노선 하나만 지켜주면 돼.</strong>
+    3등급이 포함된 과목들의 성적을 만회하기 위해서, 그나마 가능성 있는 과목에서는 <strong>성취도 A를 받기 위한 노력이 반드시 병행</strong>되어야 해. 다른 과목의 노력은 절대 헛되지 않아 — 그 노력의 빛이 너를 비추려면, <strong>수학이라는 마지막 퍼즐 하나만 지켜주면 돼.</strong>
   </div>
 </div>
 
@@ -354,6 +375,75 @@ function buildTable(){
     bd.appendChild(tr);
   });
 }
+
+// ④ 등급 경계 분석
+const bdData = [
+  {name:'대수(수학)', cr:3, N:187, rank:119, grade:3, score:28, avg:41.2},
+  {name:'영어Ⅰ', cr:4, N:187, rank:61, grade:2, score:79, avg:57.1},
+  {name:'독서와작문', cr:3, N:187, rank:82, grade:3, score:62, avg:54.9},
+  {name:'윤리와사상', cr:4, N:111, rank:29, grade:2, score:66, avg:52.7},
+  {name:'생명과학', cr:4, N:51, rank:11, grade:2, score:88, avg:64.6}
+];
+const grCuts = [0.10, 0.34, 0.66, 0.90, 1.00];
+const grColors = ['#34D399','#60A5FA','#FBBF24','#FB923C','#FF4D4D'];
+const grDarkColors = ['#065F46','#1E3A5F','#633806','#6B2B06','#501313'];
+
+function renderBoundary(){
+  const el = document.getElementById('boundaryBars');
+  el.innerHTML = '';
+  bdData.forEach(d => {
+    const bounds = grCuts.map(c => Math.floor(d.N * c));
+    const frontCut = d.grade > 1 ? bounds[d.grade - 2] : 0;
+    const backCut = bounds[d.grade - 1];
+    const toFront = d.grade > 1 ? d.rank - frontCut : null;
+    const toBack = d.grade < 5 ? backCut - d.rank : null;
+
+    const row = document.createElement('div');
+    row.className = 'bd-row';
+    
+    let zones = '';
+    let prev = 0;
+    for(let i = 0; i < 5; i++){
+      const w = ((bounds[i] - prev) / d.N * 100);
+      const isCur = (i + 1) === d.grade;
+      const bg = isCur ? grColors[i] + '30' : 'transparent';
+      const border = isCur ? `border:1px solid ${grColors[i]}40` : '';
+      zones += `<div class="bd-zone" style="left:${prev/d.N*100}%;width:${w}%;background:${bg};${border};color:${grColors[i]}${isCur?'':'44'}">${i+1}</div>`;
+      prev = bounds[i];
+    }
+    
+    const mePos = (d.rank / d.N * 100);
+
+    row.innerHTML = `
+      <div class="bd-head">
+        <div class="bd-name">${d.name} <span style="font-size:11px;font-weight:400;color:var(--t3)">${d.cr}학점 · ${d.N}명 중 ${d.rank}등 · 원점수 ${d.score}</span></div>
+        <div style="font-size:13px;font-weight:600;color:${grColors[d.grade-1]}">${d.grade}등급</div>
+      </div>
+      <div class="bd-track">
+        ${zones}
+        <div class="bd-me" style="left:${mePos}%"><div class="bd-me-dot"></div></div>
+      </div>
+      <div class="bd-tags">
+        ${d.grade > 1 ? `<div class="bd-tag" style="background:${grColors[d.grade-2]}15;color:${grColors[d.grade-2]}">▲ ${d.grade-1}등급까지 ${toFront}명</div>` : ''}
+        ${d.grade < 5 ? `<div class="bd-tag" style="background:${grColors[d.grade]}15;color:${grColors[d.grade]}">▼ ${d.grade+1}등급까지 ${toBack}명</div>` : ''}
+      </div>
+    `;
+    el.appendChild(row);
+  });
+
+  // 환산등급 동기부여 메시지
+  const msgDiv = document.createElement('div');
+  msgDiv.className = 'msg msg-g';
+  msgDiv.style.marginTop = '16px';
+  msgDiv.innerHTML = `
+    등급을 올리기 어렵더라도 <strong>포기하면 안 되는 이유</strong>가 있어.<br/><br/>
+    2028학년도에서는 <strong style="color:var(--green)">등급과 성취도 중 더 나은 쪽으로 환산등급을 반영</strong>해줄 가능성이 높아지고 있어.<br/><br/>
+    즉, 3등급이라도 원점수를 올려서 <strong style="color:var(--green)">성취도 A를 받으면 1등급, B를 받으면 2등급</strong>으로 환산 평가될 수 있다는 뜻이지.<br/><br/>
+    <strong>모든 과목에서 원점수 1점이라도 더 올리는 게 곧 등급을 바꾸는 길이란다.</strong>
+  `;
+  el.appendChild(msgDiv);
+}
+renderBoundary();
 
 // init
 buildBlocks();
